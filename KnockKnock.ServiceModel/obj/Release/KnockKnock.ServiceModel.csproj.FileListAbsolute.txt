@@ -1,0 +1,11 @@
+C:\GitHub\KnockKnock.ServiceStack\KnockKnock.ServiceModel\bin\Release\KnockKnock.ServiceModel.dll
+C:\GitHub\KnockKnock.ServiceStack\KnockKnock.ServiceModel\bin\Release\KnockKnock.ServiceModel.pdb
+C:\GitHub\KnockKnock.ServiceStack\KnockKnock.ServiceModel\bin\Release\ServiceStack.Common.dll
+C:\GitHub\KnockKnock.ServiceStack\KnockKnock.ServiceModel\bin\Release\ServiceStack.Interfaces.dll
+C:\GitHub\KnockKnock.ServiceStack\KnockKnock.ServiceModel\bin\Release\ServiceStack.Text.dll
+C:\GitHub\KnockKnock.ServiceStack\KnockKnock.ServiceModel\bin\Release\ServiceStack.Common.xml
+C:\GitHub\KnockKnock.ServiceStack\KnockKnock.ServiceModel\bin\Release\ServiceStack.Interfaces.xml
+C:\GitHub\KnockKnock.ServiceStack\KnockKnock.ServiceModel\bin\Release\ServiceStack.Text.xml
+C:\GitHub\KnockKnock.ServiceStack\KnockKnock.ServiceModel\obj\Release\KnockKnock.ServiceModel.csprojResolveAssemblyReference.cache
+C:\GitHub\KnockKnock.ServiceStack\KnockKnock.ServiceModel\obj\Release\KnockKnock.ServiceModel.dll
+C:\GitHub\KnockKnock.ServiceStack\KnockKnock.ServiceModel\obj\Release\KnockKnock.ServiceModel.pdb
