@@ -56,7 +56,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FeedsById.cs" />
+    <Compile Include="FeedsByName.cs" />
+    <Compile Include="FeedsPersist.cs" />
+    <Compile Include="KnocksByLocationGetV1.cs" />
+    <Compile Include="FeedsByLocation.cs" />
     <Compile Include="KnockGetV1.cs" />
+    <Compile Include="KnocksByFeedId.cs" />
+    <Compile Include="Types\FeedDto.cs" />
     <Compile Include="Types\KnockDto.cs" />
     <Compile Include="KnockPostV1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

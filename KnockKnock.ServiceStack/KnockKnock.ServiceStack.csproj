@@ -56,6 +56,10 @@
       <HintPath>..\packages\ServiceStack.3.9.71\lib\net35\ServiceStack.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="ServiceStack.Api.Swagger, Version=3.9.71.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Api.Swagger.3.9.71\lib\net35\ServiceStack.Api.Swagger.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="ServiceStack.Common, Version=3.9.71.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ServiceStack.Common.3.9.71\lib\net35\ServiceStack.Common.dll</HintPath>
       <Private>True</Private>
@@ -118,6 +122,24 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="documentation\css\hightlight.default.css" />
+    <Content Include="documentation\css\screen.css" />
+    <Content Include="documentation\images\logo_small.png" />
+    <Content Include="documentation\images\pet_store_api.png" />
+    <Content Include="documentation\images\throbber.gif" />
+    <Content Include="documentation\images\wordnik_api.png" />
+    <Content Include="documentation\index.html" />
+    <Content Include="documentation\lib\backbone-min.js" />
+    <Content Include="documentation\lib\handlebars-1.0.rc.1.js" />
+    <Content Include="documentation\lib\highlight.7.3.pack.js" />
+    <Content Include="documentation\lib\jquery-1.8.0.min.js" />
+    <Content Include="documentation\lib\jquery.ba-bbq.min.js" />
+    <Content Include="documentation\lib\jquery.slideto.min.js" />
+    <Content Include="documentation\lib\jquery.wiggle.min.js" />
+    <Content Include="documentation\lib\swagger.js" />
+    <Content Include="documentation\lib\underscore-min.js" />
+    <Content Include="documentation\swagger-ui.js" />
+    <Content Include="documentation\swagger-ui.min.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
