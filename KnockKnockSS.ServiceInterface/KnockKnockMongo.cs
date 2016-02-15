@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using KnockKnock.ServiceModel;
 using KnockKnock.ServiceModel.Types;
@@ -12,57 +13,148 @@ namespace KnockKnockSS.ServiceInterface
 {
     public class KnockKnockMongo : Service
     {
-        internal IMongoClient Mongo { get; set; } = new MongoClient();
-        internal Func<IMongoDatabase> Database;
-        public KnockKnockMongo()
+        public IMongoCollection<T> Database<T>(string db = "test", string collection = "KnockKnock")
         {
-            Database = () => Mongo.GetDatabase("test");
+            var conn = ConfigurationManager.ConnectionStrings["Mongo"].ConnectionString;
+            var mongo = string.Equals(conn, "")
+                ? new MongoClient()
+                : new MongoClient(conn);
+            return mongo.GetDatabase(db).GetCollection<T>(collection);
         }
+
         public KnockDto Get(KnockGetV1 request)
         {
-            var repo = Database().GetCollection<Potato>("KnockKnock");
-
-            return repo.Find(Builders<Potato>.Filter.Eq(k => k.Id, request.Id)).FirstOrDefault();
+            return Database<PotatoKnock>().Find(Builders<PotatoKnock>.Filter.Eq(k => k._id, request.Id)).FirstOrDefault()?.ToDto();
         }
 
-        public ICollection<KnockDto> Get(ByLocationGetV1 request)
+        public List<KnockDto> Get(KnocksByLocationGetV1 request)
         {
-            var db = Database().GetCollection<Potato>("KnockKnock");
-            return db.Find( //TODO: Make this less bullshit.
-                Builders<Potato>.Filter.Near(k => k.PotatoLoc, request.Longitude, request.Latitude, request.Radius, 0))
+            return Database<PotatoKnock>().Find(
+                Builders<PotatoKnock>.Filter.Near(k => k.Location,
+                    new GeoJsonPoint<GeoJson2DGeographicCoordinates>(
+                        new GeoJson2DGeographicCoordinates(request.Longitude, request.Latitude)), request.Radius))
                 .ToEnumerable()
-                .Cast<KnockDto>()
+                .Select(p => p.ToDto())
                 .ToList();
+        }
+
+        public List<KnockDto> Get(KnocksByFeedId request)
+        {
+            return
+                Database<PotatoKnock>()
+                    .Find(Builders<PotatoKnock>.Filter.Eq(k => k.FeedId, request.FeedId))
+                    .ToEnumerable()
+                    .Select(k => k.ToDto())
+                    .ToList();
         } 
 
         public void Any(KnockPostV1 request)
         {
-            var db = new MongoClient().GetDatabase("test");
-            var collection = db.GetCollection<Potato>("KnockKnock");
-            collection.FindOneAndReplace(Builders<Potato>.Filter.Eq(k => k.Id, request.Knock.Id), new Potato(request.Knock),
-                new FindOneAndReplaceOptions<Potato, Potato>() { IsUpsert = true });
+            Database<PotatoKnock>()
+                .FindOneAndReplace(Builders<PotatoKnock>.Filter.Eq(k => k._id, request.Knock.Id), new PotatoKnock(request.Knock),
+                    new FindOneAndReplaceOptions<PotatoKnock, PotatoKnock> {IsUpsert = true});
+        }
+
+        public string Any(FeedsPersist request)
+        {
+            throw new NotImplementedException();
+
+        }
+
+        public List<FeedDto> Get(FeedsById request)
+        {
+            throw new NotImplementedException();
+
+        }
+
+        public List<FeedDto> Get(FeedsByName request)
+        {
+            throw new NotImplementedException();
+
+        }
+        public List<FeedDto> Get(FeedsByLocation request)
+        {
+            throw new NotImplementedException();
+
         }
 
     }
 
-    internal class Potato : KnockDto
+    public class PotatoFeed
     {
-        public Potato()
+        [BsonId]
+        public long _id { get; set; }
+
+        public GeoJsonPoint<GeoJson2DGeographicCoordinates> Location { get; set; }
+        public string FeedId { get; set; }
+        public string Name { get; set; }
+
+        public PotatoFeed(FeedDto other)
         {
-            
+            Name = other.Name;
+            FeedId = other.FeedId;
+
+            Location =
+                new GeoJsonPoint<GeoJson2DGeographicCoordinates>(
+                    new GeoJson2DGeographicCoordinates(other.Location.Longitude, other.Location.Latitude));
         }
-        public Potato(KnockDto other)
-        {  
-            Id = other.Id;
+
+        public FeedDto ToDto()
+        {
+            return new FeedDto()
+            {
+                FeedId = FeedId,
+                Location = new LocationDto
+                {
+                    Latitude = this.Location.Coordinates.Latitude,
+                    Longitude = this.Location.Coordinates.Longitude
+                },
+                Name = Name
+            };
+        }
+    }
+
+    public class PotatoKnock
+    {
+        [BsonId]
+        public long _id { get; set; }
+
+        public GeoJsonPoint<GeoJson2DGeographicCoordinates> Location { get; set; }
+        public string FeedId { get; set; }
+        public byte[] Content { get; set; }
+        public string Message { get; set; }
+
+        public PotatoKnock()
+        {
+
+        }
+
+        public PotatoKnock(KnockDto other)
+        {
+            this._id = other.Id;
             FeedId = other.FeedId;
             Content = other.Content;
             Message = other.Message;
-            Location = other.Location;
-            PotatoLoc = new GeoJsonPoint<GeoJson2DGeographicCoordinates>(new GeoJson2DGeographicCoordinates(other.Location.Longitude, other.Location.Latitude));
+            Location =
+                new GeoJsonPoint<GeoJson2DGeographicCoordinates>(
+                    new GeoJson2DGeographicCoordinates(other.Location.Longitude, other.Location.Latitude));
         }
-        [BsonId]
-        public override long Id { get; set; }
 
-        public GeoJsonPoint<GeoJson2DGeographicCoordinates> PotatoLoc { get; set; }
+        public KnockDto ToDto()
+        {
+            return new KnockDto
+            {
+                Content = this.Content,
+                FeedId = this.FeedId,
+                Id = this._id,
+                Location =
+                    new LocationDto
+                    {
+                        Latitude = this.Location.Coordinates.Latitude,
+                        Longitude = this.Location.Coordinates.Longitude
+                    },
+                Message = this.Message
+            };
+        }
     }
 }
