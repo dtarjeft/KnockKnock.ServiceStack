@@ -59,13 +59,13 @@
     <Compile Include="FeedsById.cs" />
     <Compile Include="FeedsByName.cs" />
     <Compile Include="FeedsPersist.cs" />
-    <Compile Include="KnocksByLocationGetV1.cs" />
+    <Compile Include="KnocksByLocation.cs" />
     <Compile Include="FeedsByLocation.cs" />
     <Compile Include="KnockGetV1.cs" />
     <Compile Include="KnocksByFeedId.cs" />
     <Compile Include="Types\FeedDto.cs" />
     <Compile Include="Types\KnockDto.cs" />
-    <Compile Include="KnockPostV1.cs" />
+    <Compile Include="KnockPost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\LocationDto.cs" />
   </ItemGroup>

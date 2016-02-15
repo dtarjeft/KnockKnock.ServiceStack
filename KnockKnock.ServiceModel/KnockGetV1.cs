@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using KnockKnock.ServiceModel.Types;
 using ServiceStack.ServiceHost;
 

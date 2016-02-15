@@ -5,7 +5,7 @@ using ServiceStack.ServiceHost;
 namespace KnockKnock.ServiceModel
 {
     [Route("/api/v1/knocks/location/", "GET")]
-    public class KnocksByLocationGetV1 : IReturn<List<KnockDto>>
+    public class KnocksByLocation : IReturn<List<KnockDto>>
     {
         [ApiMember(DataType = "double", ParameterType = "query")]
         public double Latitude { get; set; }

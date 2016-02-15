@@ -2,11 +2,11 @@
 
 namespace KnockKnock.ServiceModel
 {
-
+    [Api]
     [Route("/api/v1/knocks/", "POST, PUT")]
-    public class KnockPostV1 : IReturn<long>
+    public class KnockPost : IReturn<long>
     {
-        [ApiMember(DataType = "KnockDto", ParameterType = "body")]
+        [ApiMember]
         public Types.KnockDto Knock { get; set; }
     }
 }

@@ -16,10 +16,18 @@ namespace KnockKnockSS.ServiceInterface
         public IMongoCollection<T> Database<T>(string db = "test", string collection = "KnockKnock")
         {
             var conn = ConfigurationManager.ConnectionStrings["Mongo"].ConnectionString;
-            var mongo = string.Equals(conn, "")
+            var mongo = string.IsNullOrEmpty(conn)
                 ? new MongoClient()
                 : new MongoClient(conn);
             return mongo.GetDatabase(db).GetCollection<T>(collection);
+        }
+
+        private IEnumerable<T> ByLocation<T>(double longitude, double latitude, double radius) where T : IHasLocation
+        {
+            return Database<T>()
+                .Find(Builders<T>.Filter.Near(k => k.Location,
+                    new GeoJsonPoint<GeoJson2DGeographicCoordinates>(new GeoJson2DGeographicCoordinates(longitude,
+                        latitude)), radius)).ToEnumerable();
         }
 
         public KnockDto Get(KnockGetV1 request)
@@ -27,16 +35,13 @@ namespace KnockKnockSS.ServiceInterface
             return Database<PotatoKnock>().Find(Builders<PotatoKnock>.Filter.Eq(k => k._id, request.Id)).FirstOrDefault()?.ToDto();
         }
 
-        public List<KnockDto> Get(KnocksByLocationGetV1 request)
+        public List<KnockDto> Get(KnocksByLocation request)
         {
-            return Database<PotatoKnock>().Find(
-                Builders<PotatoKnock>.Filter.Near(k => k.Location,
-                    new GeoJsonPoint<GeoJson2DGeographicCoordinates>(
-                        new GeoJson2DGeographicCoordinates(request.Longitude, request.Latitude)), request.Radius))
-                .ToEnumerable()
+            return ByLocation<PotatoKnock>(request.Longitude, request.Latitude, request.Radius)
                 .Select(p => p.ToDto())
                 .ToList();
         }
+
 
         public List<KnockDto> Get(KnocksByFeedId request)
         {
@@ -46,9 +51,9 @@ namespace KnockKnockSS.ServiceInterface
                     .ToEnumerable()
                     .Select(k => k.ToDto())
                     .ToList();
-        } 
+        }
 
-        public void Any(KnockPostV1 request)
+        public void Any(KnockPost request)
         {
             Database<PotatoKnock>()
                 .FindOneAndReplace(Builders<PotatoKnock>.Filter.Eq(k => k._id, request.Knock.Id), new PotatoKnock(request.Knock),
@@ -58,29 +63,45 @@ namespace KnockKnockSS.ServiceInterface
         public string Any(FeedsPersist request)
         {
             throw new NotImplementedException();
+         //   Database<PotatoFeed>().FindOneAndUpdate(Builders<PotatoFeed>.Filter.Eq(f => f.FeedId, request.Feed.FeedId))
 
         }
 
         public List<FeedDto> Get(FeedsById request)
         {
-            throw new NotImplementedException();
-
+            return
+                Database<PotatoFeed>()
+                    .Find(Builders<PotatoFeed>.Filter.Eq(f => f.FeedId, request.FeedId))
+                    .ToEnumerable()
+                    .Select(f => f.ToDto())
+                    .ToList();
         }
 
         public List<FeedDto> Get(FeedsByName request)
         {
-            throw new NotImplementedException();
-
+            return
+                Database<PotatoFeed>()
+                    .Find(Builders<PotatoFeed>.Filter.Eq(f => f.Name, request.FeedName))
+                    .ToEnumerable()
+                    .Select(f => f.ToDto())
+                    .ToList();
         }
         public List<FeedDto> Get(FeedsByLocation request)
         {
-            throw new NotImplementedException();
-
+            return
+                ByLocation<PotatoFeed>(request.Longitude, request.Latitude, request.Radius)
+                    .Select(f => f.ToDto())
+                    .ToList();
         }
-
     }
 
-    public class PotatoFeed
+    public interface IHasLocation
+    {
+        GeoJsonPoint<GeoJson2DGeographicCoordinates> Location { get; set; }
+    }
+
+    
+    public class PotatoFeed : IHasLocation
     {
         [BsonId]
         public long _id { get; set; }
@@ -114,7 +135,7 @@ namespace KnockKnockSS.ServiceInterface
         }
     }
 
-    public class PotatoKnock
+    public class PotatoKnock : IHasLocation
     {
         [BsonId]
         public long _id { get; set; }
@@ -137,7 +158,7 @@ namespace KnockKnockSS.ServiceInterface
             Message = other.Message;
             Location =
                 new GeoJsonPoint<GeoJson2DGeographicCoordinates>(
-                    new GeoJson2DGeographicCoordinates(other.Location.Longitude, other.Location.Latitude));
+                    new GeoJson2DGeographicCoordinates(other.Location?.Longitude ?? 0.0, other.Location?.Latitude ?? 0.0));
         }
 
         public KnockDto ToDto()
